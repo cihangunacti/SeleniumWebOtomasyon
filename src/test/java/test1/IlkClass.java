@@ -21,7 +21,7 @@ public class IlkClass {
         WebDriverManager.chromedriver().setup();
         WebDriver driver= new ChromeDriver();
         driver.manage().window().maximize();
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(50));
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(175));
         driver.get("https://www.network.com.tr/");
         //cookies cikarsa kabul et butonuna basin
         driver.findElement(By.xpath("//button[@id='onetrust-accept-btn-handler']")).click();
@@ -65,15 +65,30 @@ public class IlkClass {
         //KONTROLLER
         WebElement sepet_indirimlifiyat=driver.findElement(By.xpath("//span[@class='cartItem__price -sale']"));
         String gelenindirimlifiyat=sepet_indirimlifiyat.getText();
-        Long indirimli_fiyat=Long.parseLong(gelenindirimlifiyat);
+        String gelenindirimli_fiyat=gelenindirimlifiyat.substring(0,5);
+        String yeni_indirimlifiyat= gelenindirimli_fiyat.replace(".","");
+       //System.out.println(yeni_indirimlifiyat);
+        Long indirimli_fiyat=Long.parseLong(yeni_indirimlifiyat);
         WebElement sepet_eskifiyat=driver.findElement(By.xpath("//span[@class='cartItem__price -old -labelPrice']"));
         String geleneskifiyat=sepet_eskifiyat.getText();
-        Long eskifiyat=Long.parseLong(geleneskifiyat);
+        String geleneskifiyat_=geleneskifiyat.substring(0,5);
+        String yeni_eskifiyat=geleneskifiyat_.replace(".","");
+        Long eskifiyat=Long.parseLong(yeni_eskifiyat);
+        //System.out.println(eskifiyat);
         WebElement sepet_beden=driver.findElement(By.xpath("//span[@class='cartItem__attrValue']"));
         String beden_k=sepet_beden.getText();
 
         Assert.assertTrue(bedenkontrol.contains(beden_k)&& fiyat_kontrol.contains(fiyat_kontrol));
         Assert.assertTrue(eskifiyat>indirimli_fiyat);
+
+
+        //DEVAM ET
+        WebElement devam_et =driver.findElement(By.xpath("//button[@class='continueButton n-button large block text-center -primary']"));
+        devam_et.click();
+
+        //Giriş yap butonunun geldiği kontrol edilir.
+        WebElement girisyap=driver.findElement(By.xpath("//button[@type='submit']"));
+        Assert.assertTrue(girisyap.isDisplayed());
 
 
 
