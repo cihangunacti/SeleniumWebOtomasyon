@@ -1,5 +1,7 @@
 package test1;
 
+import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvException;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.Assert;
 import org.junit.Test;
@@ -11,17 +13,22 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
 
 import javax.swing.*;
+import java.io.FileReader;
+import java.io.Reader;
 import java.time.Duration;
-
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 public class IlkClass {
 
     @Test
-    public void test01() {
+    public void test01() throws IOException, CsvException,InterruptedException{
 
         WebDriverManager.chromedriver().setup();
         WebDriver driver= new ChromeDriver();
         driver.manage().window().maximize();
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(175));
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(170));
         driver.get("https://www.network.com.tr/");
         //cookies cikarsa kabul et butonuna basin
         driver.findElement(By.xpath("//button[@id='onetrust-accept-btn-handler']")).click();
@@ -49,7 +56,7 @@ public class IlkClass {
         WebElement hover=driver.findElement(By.xpath("//div[@data-product-id='112624']"));
         Actions actions=new Actions(driver);
         actions.moveToElement(hover).perform();
-
+        Thread.sleep(2000);
         WebElement beden=driver.findElement(By.xpath("//label[@extcode='1073542007']"));
         actions.moveToElement(beden).perform();
         beden.click();
@@ -88,7 +95,33 @@ public class IlkClass {
 
         //Giriş yap butonunun geldiği kontrol edilir.
         WebElement girisyap=driver.findElement(By.xpath("//button[@type='submit']"));
+        WebElement eposta=driver.findElement(By.xpath("//input[@id='n-input-email']"));
+        WebElement sifre=driver.findElement(By.xpath("//input[@type='password']"));
+        String path="src/test/java/test1/csvtest.csv";
+        Reader reader =new FileReader(path);
+        CSVReader csvReader =new CSVReader(reader);
+        //List<String[]> data = csvReader.readAll();
+        String [] csvData;
+        while ((csvData=csvReader.readNext()) !=null){
+            String mail_adresi = csvData[0];
+            String sifre_=csvData[1];
+
+            eposta.sendKeys(mail_adresi);
+            sifre.sendKeys(sifre_);
+
+        }
         Assert.assertTrue(girisyap.isDisplayed());
+        WebElement logo=driver.findElement(By.xpath("//a[@class='headerCheckout__logo']"));
+        logo.click();
+        WebElement anasayfa_sepet=driver.findElement(By.xpath("//button[@class='header__basketTrigger js-basket-trigger -desktop']"));
+        anasayfa_sepet.click();
+        Integer uruncikarma=0;
+        WebElement uruncikart=driver.findElement(By.xpath("//div[@class='header__basketProductBtn header__basketModal -remove']"));
+        uruncikart.click();
+        WebElement cikart=driver.findElement(By.xpath("//button[@class='btn -black o-removeCartModal__button']"));
+        cikart.click();
+        uruncikarma++;
+        Assert.assertTrue(uruncikarma==1);
 
 
 
